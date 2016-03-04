@@ -1,0 +1,11 @@
+{
+    "name": "catsnake",
+    "version": "0.01",
+    "description": "A task-based, simple information scraper implemented in WebdriverIO.",
+    "keywords": [],
+    "license": "MIT",
+    "dependencies":
+        {
+	    "webdriverio" : "latest"
+        }
+}
