@@ -8,7 +8,10 @@ const INFO_USAGE = "Usage: node interpret.js [-v | --verbose] <path-to-task>";
  * Interprets a CSL task and translates to WebdriverIO.
  */
 function main() {
-  readArgs(process.argv);  
+  var data = readArgs(process.argv);
+  if (!data)
+    return; // Abandon ship!
+  parse(data);
 }
 
 function readArgs(args) {
@@ -27,6 +30,12 @@ function readArgs(args) {
     flag = args.indexOf("-v");
   if (flag != -1) {
     args.splice(flag, 1);
+    if (args.length < 3) {
+      console.error(ERROR_NUM_ARGS);
+      console.error(INFO_USAGE); 
+      return;
+    }
+    
     VERBOSE_FLAG = true;
   }
 
@@ -41,6 +50,12 @@ function readArgs(args) {
 
   // If all goes well...
   return data;
+}
+
+/*
+ * Parses file data as CSL and interprets as WebdriverIO code.
+ */
+function parse(data) {
 }
 
 if (require.main === module) {
