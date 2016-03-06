@@ -1,11 +1,33 @@
 {
-    "name": "catsnake",
-    "version": "0.01",
-    "description": "A task-based, simple information scraper implemented in WebdriverIO.",
-    "keywords": [],
-    "license": "MIT",
-    "dependencies":
-        {
-	    "webdriverio" : "latest"
-        }
+  "name": "catsnake",
+  "version": "0.0.1",
+  "description": "A task-based, simple information scraper implemented in WebdriverIO.",
+  "main": "index.js",
+  "dependencies": {
+    "selenium-standalone": "latest",
+    "webdriverio": "latest"  
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OzuYatamutsu/catsnake.git"
+  },
+  "keywords": [
+    "web",
+    "scraper",
+    "task",
+    "script",
+    "batch",
+    "webdriver",
+    "selenium"
+  ],
+  "author": "Sean Collins",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/OzuYatamutsu/catsnake/issues"
+  },
+  "homepage": "https://github.com/OzuYatamutsu/catsnake#readme"
 }
