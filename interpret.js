@@ -1,7 +1,8 @@
-var IS_VERBOSE = false;
+var fs = require("fs");
 
-const VERBOSE_FLAG = ["-v", "--verbose"];
+var IS_VERBOSE = false;
 const ERROR_NUM_ARGS = "Error: Number of arguments was invalid.";
+const ERROR_FILEIO = "Error: Could not open the file specified. Does it exist, and do we have read access to it?";
 const INFO_USAGE = "Usage: node interpret.js [-v | --verbose] <path-to-task>";
 /*
  * Interprets a CSL task and translates to WebdriverIO.
@@ -12,13 +13,34 @@ function main() {
 
 function readArgs(args) {
   // Usage: interpret.js [-v] <task>
+  
+  // Check number of args
   if (!args || args.length < 3 || args.length > 4) {
-    console.log(ERROR_NUM_ARGS);
-    console.log(INFO_USAGE);
+    console.error(ERROR_NUM_ARGS);
+    console.error(INFO_USAGE);
     return;
   }
 
-  // TODO  
+  // Check for verbose flag
+  var flag = args.indexOf("--verbose");
+  if (flag == -1)
+    flag = args.indexOf("-v");
+  if (flag != -1) {
+    args.splice(flag, 1);
+    VERBOSE_FLAG = true;
+  }
+
+  // Check if we can open file specified
+  var data = "";
+  try {
+    data = fs.readFileSync(args[2]);
+  } catch (err) {
+    console.error(ERROR_FILEIO);
+    return;
+  }
+
+  // If all goes well...
+  return data;
 }
 
 if (require.main === module) {
