@@ -4,6 +4,7 @@
   "description": "A task-based, simple information scraper implemented in WebdriverIO.",
   "main": "index.js",
   "dependencies": {
+    "fs": "latest",
     "selenium-standalone": "latest",
     "webdriverio": "latest"  
   },
