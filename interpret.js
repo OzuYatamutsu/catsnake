@@ -3,6 +3,7 @@ var fs = require("fs");
 var IS_VERBOSE = false;
 const ERROR_NUM_ARGS = "Error: Number of arguments was invalid.";
 const ERROR_FILEIO = "Error: Could not open the file specified. Does it exist, and do we have read access to it?";
+const ERROR_SYNTAX = "Error: Syntax error on line ";
 const INFO_USAGE = "Usage: node interpret.js [-v | --verbose] <path-to-task>";
 /*
  * Interprets a CSL task and translates to WebdriverIO.
@@ -56,6 +57,28 @@ function readArgs(args) {
  * Parses file data as CSL and interprets as WebdriverIO code.
  */
 function parse(data) {
+  var lines = data.split('\n');
+  var timeout = 30000;
+  var output = [];
+  if ("!timeout" in lines[0])
+    // timeout = processTimeout()
+  for (var i = 0; i < lines.length; i++) {
+    // Process line-by-line
+    try {
+      output.push(processLine(lines[i])); 
+    } catch (err) {
+      console.error(ERROR_SYNTAX + i);
+      return; 
+    }
+  }
+}
+
+function processTimeout(line) {
+
+}
+
+function processLine(line) {
+
 }
 
 if (require.main === module) {
