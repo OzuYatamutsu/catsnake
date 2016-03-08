@@ -1,7 +1,11 @@
 require('./translate');
 var fs = require("fs");
 
+const ARG_TOKEN = "{arg}";
+const JQUERY_TAG = /^jquery\[(.*?)\]$/;
+
 var IS_VERBOSE = false;
+
 const ERROR_NUM_ARGS = "Error: Number of arguments was invalid.";
 const ERROR_FILEIO = "Error: Could not open the file specified. Does it exist, and do we have read access to it?";
 const ERROR_SYNTAX = "Error: Syntax error on line ";
@@ -87,7 +91,42 @@ function timescale(args) {
   return args[0] * timescales[1];
 }
 
+// Translates a single line, given a command and an argument array.
 function processLine(cmd, args) {
+  //var template = translate[cmd];
+  //args = processArgs(args[i]);
+
+  switch (cmd) {
+    case "goto":
+      return `url(${args[1]})`;
+    case "set":
+      break;
+    case "click":
+      return `click(${processJquery(args[1])})`
+      break;
+    case "wait":
+      break;
+    case "return":
+      break;
+    default:
+      throw;
+  }
+
+  for (var i = 0; i < args.length; i++) {
+    template = template.replace(ARG_TOKEN, args[i]);
+  }
+
+  return template;
+}
+
+// Processes a jQuery argument.
+function processJquery(arg) {
+  return `'${JQUERY_TAG.exec(arg)[0]
+    .replace(/"/g, '\\"')}'`;
+}
+
+// Translates an argument array into valid JavaScript.
+function processArgs(args) {
 
 }
 
