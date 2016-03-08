@@ -1,3 +1,4 @@
+require('./translate');
 var fs = require("fs");
 
 var IS_VERBOSE = false;
@@ -58,7 +59,7 @@ function readArgs(args) {
  */
 function parse(data) {
   var lines = data.split('\n');
-  var timeout = 30000;
+  var timeout = 30000; // ms
   var output = [];
 
   for (var i = 0; i < lines.length; i++) {
@@ -66,9 +67,13 @@ function parse(data) {
     var line = lines[i].split(' ');
     const cmd = line[0];
     const args = line.slice(1);
+    if (cmd == '!timeout') {
+      timeout = timescale(args);
+      continue;
+    }
 
     try {
-      output.push(processLine(lines[i]));
+      output.push(processLine(cmd, args));
     } catch (err) {
       console.error(ERROR_SYNTAX + i);
       return;
@@ -76,12 +81,14 @@ function parse(data) {
   }
 }
 
-function processTimeout(line) {
-
+// Converts all timescales to milliseconds
+function timescale(args) {
+  return args[0] * timescales[1];
 }
 
-function processLine(line) {
+function processLine(cmd, args) {
 
+    return
 }
 
 if (require.main === module) {
