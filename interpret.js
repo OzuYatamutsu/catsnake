@@ -67,15 +67,16 @@ function parse(data) {
     var line = lines[i].split(' ');
     const cmd = line[0];
     const args = line.slice(1);
-    if (cmd == '!timeout') {
+    if (cmd == "!timeout") {
       timeout = timescale(args);
+      if (VERBOSE_FLAG) console.log(`[VERBOSE: LINE ${i}] Set timeout to ${args.join(' ')}.`);
       continue;
     }
 
     try {
       output.push(processLine(cmd, args));
     } catch (err) {
-      console.error(ERROR_SYNTAX + i);
+      console.error(`[ERROR: LINE ${i}] Syntax error on: ${lines[i]}`);
       return;
     }
   }
@@ -88,7 +89,6 @@ function timescale(args) {
 
 function processLine(cmd, args) {
 
-    return
 }
 
 if (require.main === module) {
