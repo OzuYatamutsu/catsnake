@@ -17,7 +17,7 @@ function main() {
 
 function readArgs(args) {
   // Usage: interpret.js [-v] <task>
-  
+
   // Check number of args
   if (!args || args.length < 3 || args.length > 4) {
     console.error(ERROR_NUM_ARGS);
@@ -33,10 +33,10 @@ function readArgs(args) {
     args.splice(flag, 1);
     if (args.length < 3) {
       console.error(ERROR_NUM_ARGS);
-      console.error(INFO_USAGE); 
+      console.error(INFO_USAGE);
       return;
     }
-    
+
     VERBOSE_FLAG = true;
   }
 
@@ -60,15 +60,18 @@ function parse(data) {
   var lines = data.split('\n');
   var timeout = 30000;
   var output = [];
-  if ("!timeout" in lines[0])
-    // timeout = processTimeout()
+
   for (var i = 0; i < lines.length; i++) {
     // Process line-by-line
+    var line = lines[i].split(' ');
+    const cmd = line[0];
+    const args = line.slice(1);
+
     try {
-      output.push(processLine(lines[i])); 
+      output.push(processLine(lines[i]));
     } catch (err) {
       console.error(ERROR_SYNTAX + i);
-      return; 
+      return;
     }
   }
 }
