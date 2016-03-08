@@ -1,9 +1,9 @@
 var translate = {
-  "goto": "url('{0}')",
-  "set": "setValue('{0}', '{1}')",
-  "click": "click('{0}')",
-  "wait": "waitForExist('{0}', {1})",
-  "return": "return '{0}'"
+  "goto": "url('{arg}')",
+  "set": "setValue('{arg}', '{arg}')",
+  "click": "click('{arg}')",
+  "wait": "waitForExist('{arg}', {arg})",
+  "return": "return '{arg}'"
 }
 
 var timescales = {
