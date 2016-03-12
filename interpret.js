@@ -50,7 +50,7 @@ function readArgs(args) {
   // Check if we can open file specified
   var data = "";
   try {
-    data = fs.readFileSync(args[2]);
+      data = fs.readFileSync(args[2], {encoding: "utf8"});
   } catch (err) {
     console.error(ERROR_FILEIO);
     return;
