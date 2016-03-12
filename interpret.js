@@ -6,7 +6,7 @@ const ARG_TOKEN = "{arg}";
 const JQUERY_TAG = /jquery\[(.*?)\]/;
 
 var IS_VERBOSE = false;
-
+var varStack = [];
 const ERROR_NUM_ARGS = "Error: Number of arguments was invalid.";
 const ERROR_FILEIO = "Error: Could not open the file specified. Does it exist, and do we have read access to it?";
 const ERROR_SYNTAX = "Error: Syntax error on line ";
@@ -99,8 +99,22 @@ function processLine(cmd, args) {
       client = client.url(args[1]);
       break;
     case "set":
-      if (JQUERY_TAG.test(args[1]))
-        return process
+      if (JQUERY_TAG.test(args[1])) {
+        if (JQUERY_TAG.test(args[2])) {
+          var value = client.getValue(processJquery(args[2]));
+        }
+          client = client.setValue(
+            `${processJquery(args[1])}`, 
+            processJquery(args[2]));
+      }
+      
+      else {
+        if (JQUERY_TAG.test(args[2]))
+          // TODO
+        else
+          varStack.push({args[1]: args.slice(2).join(" ")});
+      }
+        
       break;
     case "click":
       client = client.click(processJquery(args[1]));
@@ -110,6 +124,7 @@ function processLine(cmd, args) {
         client = client.waitForExist(processJquery(args[1]), timeout);
       break;
     case "return":
+      return varStack[args[0]];
       break;
     default:
       throw;
