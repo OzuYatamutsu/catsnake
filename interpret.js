@@ -1,8 +1,9 @@
 require('./translate');
 var fs = require("fs");
+var client = require("webdriverio");
 
 const ARG_TOKEN = "{arg}";
-const JQUERY_TAG = /^jquery\[(.*?)\]$/;
+const JQUERY_TAG = /jquery\[(.*?)\]/;
 
 var IS_VERBOSE = false;
 
@@ -78,7 +79,7 @@ function parse(data) {
     }
 
     try {
-      output.push(processLine(cmd, args));
+      processLine(cmd, args);
     } catch (err) {
       console.error(`[ERROR: LINE ${i}] Syntax error on: ${lines[i]}`);
       return;
@@ -93,30 +94,26 @@ function timescale(args) {
 
 // Translates a single line, given a command and an argument array.
 function processLine(cmd, args) {
-  //var template = translate[cmd];
-  //args = processArgs(args[i]);
-
   switch (cmd) {
     case "goto":
-      return `url(${args[1]})`;
+      client = client.url(args[1]);
+      break;
     case "set":
+      if (JQUERY_TAG.test(args[1]))
+        return process
       break;
     case "click":
-      return `click(${processJquery(args[1])})`
+      client = client.click(processJquery(args[1]));
       break;
     case "wait":
+      if (args[0] === "for")
+        client = client.waitForExist(processJquery(args[1]), timeout);
       break;
     case "return":
       break;
     default:
       throw;
   }
-
-  for (var i = 0; i < args.length; i++) {
-    template = template.replace(ARG_TOKEN, args[i]);
-  }
-
-  return template;
 }
 
 // Processes a jQuery argument.
