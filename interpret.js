@@ -123,7 +123,8 @@ function processLine(cmd, args) {
       }
       else {
         if (VERBOSE_FLAG) console.log(`[VERBOSE] Setting local variable.`);
-        varStack.push({args[0]: value});
+        var obj = {}; obj[args[0]] = value;
+        varStack.push(obj);
       }
       break;
     case "click":
@@ -146,7 +147,7 @@ function processLine(cmd, args) {
       return varStack[args[0]];
       break;
     default:
-      throw;
+      throw new Error();
   }
 }
 
