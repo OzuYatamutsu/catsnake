@@ -97,32 +97,50 @@ function timescale(args) {
 function processLine(cmd, args) {
   switch (cmd) {
     case "goto":
+      if (VERBOSE_FLAG) console.log(`[VERBOSE] Navigating to ${args[1]}.`);
       client = client.url(args[1]);
       break;
     case "set":
+      if (VERBOSE_FLAG) console.log(`[VERBOSE] Setting value.`);
       var value = 0;
       
       // Check how we should interpret value
       if (JQUERY_TAG.test(args[2])) {
+        if (VERBOSE_FLAG) console.log(`[VERBOSE] Getting value as jQuery.`);
         value = jqueryEvalOrValue(args[2]);
-      else
+      }
+      else {
+        if (VERBOSE_FLAG) console.log(`[VERBOSE] Getting value as string.`);
         value = args.slice(2).join(" ");  
-      
+      }
       // Check what we should set
-      if (JQUERY_TAG.test(args[0]))
+      if (JQUERY_TAG.test(args[0])) {
+        if (VERBOSE_FLAG) console.log(`[VERBOSE] Setting variable as jQuery.`);
         client = client.setValue(
           processJquery(args[0]),
           value
         );
-      else
+      }
+      else {
+        if (VERBOSE_FLAG) console.log(`[VERBOSE] Setting local variable.`);
         varStack.push({args[0]: value});
+      }
       break;
     case "click":
+      if (VERBOSE_FLAG) console.log(`[VERBOSE] Clicking on ${args[1]}.`);
       client = client.click(processJquery(args[1]));
       break;
     case "wait":
-      if (args[0] === "for")
-        client = client.waitForExist(processJquery(args[1]), timeout);
+      if (args[0] === "for") {
+        if (VERBOSE_FLAG) console.log(`[VERBOSE] Waiting for ${args[1]}.`);
+        client = client
+          .waitForExist(processJquery(args[1]), timeout);
+      } else {
+        // Process as timestamp
+        if (VERBOSE_FLAG) console.log(`[VERBOSE] Waiting for timeslice.`);
+        client = client
+          .pause(timescale(args));
+      }
       break;
     case "return":
       return varStack[args[0]];
@@ -154,11 +172,6 @@ function jqueryEvalOrValue(arg) {
   }
   
   return retval;
-}
-
-// Translates an argument array into valid JavaScript.
-function processArgs(args) {
-
 }
 
 if (require.main === module) {
