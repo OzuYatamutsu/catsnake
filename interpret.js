@@ -4,6 +4,7 @@ var client = require("webdriverio");
 
 const ARG_TOKEN = "{arg}";
 const JQUERY_TAG = /jquery\[(.*?)\]/;
+const JQUERY_TAG_EOT = /jquery\[(.*?)\]$/;
 
 var IS_VERBOSE = false;
 var varStack = [];
@@ -99,22 +100,22 @@ function processLine(cmd, args) {
       client = client.url(args[1]);
       break;
     case "set":
-      if (JQUERY_TAG.test(args[1])) {
-        if (JQUERY_TAG.test(args[2])) {
-          var value = client.getValue(processJquery(args[2]));
-        }
-          client = client.setValue(
-            `${processJquery(args[1])}`, 
-            processJquery(args[2]));
-      }
+      var value = 0;
       
-      else {
-        if (JQUERY_TAG.test(args[2]))
-          // TODO
-        else
-          varStack.push({args[1]: args.slice(2).join(" ")});
-      }
-        
+      // Check how we should interpret value
+      if (JQUERY_TAG.test(args[2])) {
+        value = jqueryEvalOrValue(args[2]);
+      else
+        value = args.slice(2).join(" ");  
+      
+      // Check what we should set
+      if (JQUERY_TAG.test(args[0]))
+        client = client.setValue(
+          processJquery(args[0]),
+          value
+        );
+      else
+        varStack.push({args[0]: value});
       break;
     case "click":
       client = client.click(processJquery(args[1]));
@@ -135,6 +136,24 @@ function processLine(cmd, args) {
 function processJquery(arg) {
   return `'${JQUERY_TAG.exec(arg)[0]
     .replace(/"/g, '\\"')}'`;
+}
+
+// Determines whether to evaluate the argument as jQuery
+// or to just return the value of the jQuery selector.
+function jqueryEvalOrValue(arg) {
+  var retval = 0;
+  if (JQUERY_TAG_EOT.test(arg)) {
+    client = client
+      .getValue(processJquery(arg))
+      .then((result, retval) => { retval = result; });
+  } else {
+    arg = arg.replace("jquery[", "$('").replace("]", ")")
+    client = client
+      .execute((arg) => { return eval(arg); })
+      .then((result, retval) => { retval = result; });
+  }
+  
+  return retval;
 }
 
 // Translates an argument array into valid JavaScript.
