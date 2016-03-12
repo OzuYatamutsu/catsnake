@@ -1,6 +1,17 @@
 require('./translate');
 var fs = require("fs");
 var client = require("webdriverio");
+var timescales = {
+    "ms": 1,
+    "millisecond": 1,
+    "milliseconds": 1,
+    "s": 1000,
+    "second": 1000,
+    "seconds": 1000,
+    "m": 60000,
+    "minute": 60000,
+    "minutes": 60000
+}
 
 const ARG_TOKEN = "{arg}";
 const JQUERY_TAG = /jquery\[(.*?)\]/;
@@ -70,13 +81,17 @@ function parse(data) {
 
   for (var i = 0; i < lines.length; i++) {
     // Process line-by-line
-    var line = lines[i].split(' ');
-    const cmd = line[0];
-    const args = line.slice(1);
-    if (cmd == "!timeout") {
-      timeout = timescale(args);
-      if (VERBOSE_FLAG) console.log(`[VERBOSE: LINE ${i}] Set timeout to ${args.join(' ')}.`);
-      continue;
+    var line = lines[i].trim().split(' ');
+    var cmd = line[0];
+    var args = line.slice(1);
+    if (cmd === "!timeout") {
+        timeout = timescale(args);
+        if (VERBOSE_FLAG) console.log(`[VERBOSE: LINE ${i}] Set timeout to ${args.join(' ')}.`);
+        continue;
+    } else if (cmd === "#") {
+        continue;
+    } else if (line.length <= 1) {
+        continue;
     }
 
     try {
@@ -90,7 +105,7 @@ function parse(data) {
 
 // Converts all timescales to milliseconds
 function timescale(args) {
-  return args[0] * timescales[1];
+  return parseInt(args[0]) * timescales[args[1]];
 }
 
 // Translates a single line, given a command and an argument array.
