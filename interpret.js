@@ -115,8 +115,8 @@ function timescale(args) {
 function processLine(cmd, args) {
   switch (cmd) {
     case "goto":
-      if (IS_VERBOSE) console.log(`[VERBOSE] Navigating to ${args[1]}.`);
-      client = client.url(args[1]);
+      if (IS_VERBOSE) console.log(`[VERBOSE] Navigating to ${args[0]}.`);
+      client = client.url(args[0]);
       break;
     case "set":
       if (IS_VERBOSE) console.log(`[VERBOSE] Setting value.`);
