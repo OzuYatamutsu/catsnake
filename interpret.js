@@ -197,9 +197,8 @@ function seleniumPrep() {
     selenium.install(() => {
         selenium.start(() => {
             client = webdriverio.remote();
-            client.init();
-            main();
-        });   
+            client.init().then(() => main());
+        });
     });
 }
 
