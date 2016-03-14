@@ -99,7 +99,7 @@ function parse(data) {
 
     try {
       processLine(cmd, args);
-      client.pause(timeout); // TODO
+      sleep(5); // TODO: terrible
     } catch (err) {
       console.error(`[ERROR: LINE ${i}] Syntax error on: ${lines[i]}`);
       return;
@@ -201,6 +201,13 @@ function seleniumPrep() {
             client.init().then(() => main());
         });
     });
+}
+
+// Terrible debug
+function sleep(seconds) 
+{
+  var e = new Date().getTime() + (seconds * 1000);
+  while (new Date().getTime() <= e) {}
 }
 
 if (require.main === module) {
