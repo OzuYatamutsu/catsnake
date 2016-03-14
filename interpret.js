@@ -99,6 +99,7 @@ function parse(data) {
 
     try {
       processLine(cmd, args);
+      client.pause(timeout); // TODO
     } catch (err) {
       console.error(`[ERROR: LINE ${i}] Syntax error on: ${lines[i]}`);
       return;
