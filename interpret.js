@@ -146,8 +146,8 @@ function processLine(cmd, args) {
       }
       break;
     case "click":
-      if (IS_VERBOSE) console.log(`[VERBOSE] Clicking on ${args[1]}.`);
-      client = client.click(processJquery(args[1]));
+      if (IS_VERBOSE) console.log(`[VERBOSE] Clicking on ${args[0]}.`);
+      client = client.click(processJquery(args[0]));
       break;
     case "wait":
       if (args[0] === "for") {
