@@ -1,6 +1,9 @@
 require('./translate');
 var fs = require("fs");
-var client = require("webdriverio");
+var webdriverio = require("webdriverio");
+var selenium = require('selenium-standalone');
+var client = ""; // WebdriverIO client
+
 var timescales = {
     "ms": 1,
     "millisecond": 1,
@@ -55,7 +58,7 @@ function readArgs(args) {
       return;
     }
 
-    VERBOSE_FLAG = true;
+    IS_VERBOSE = true;
   }
 
   // Check if we can open file specified
@@ -86,7 +89,7 @@ function parse(data) {
     var args = line.slice(1);
     if (cmd === "!timeout") {
         timeout = timescale(args);
-        if (VERBOSE_FLAG) console.log(`[VERBOSE: LINE ${i}] Set timeout to ${args.join(' ')}.`);
+        if (IS_VERBOSE) console.log(`[VERBOSE: LINE ${i}] Set timeout to ${args.join(' ')}.`);
         continue;
     } else if (cmd === "#") {
         continue;
@@ -112,48 +115,48 @@ function timescale(args) {
 function processLine(cmd, args) {
   switch (cmd) {
     case "goto":
-      if (VERBOSE_FLAG) console.log(`[VERBOSE] Navigating to ${args[1]}.`);
+      if (IS_VERBOSE) console.log(`[VERBOSE] Navigating to ${args[1]}.`);
       client = client.url(args[1]);
       break;
     case "set":
-      if (VERBOSE_FLAG) console.log(`[VERBOSE] Setting value.`);
+      if (IS_VERBOSE) console.log(`[VERBOSE] Setting value.`);
       var value = 0;
       
       // Check how we should interpret value
       if (JQUERY_TAG.test(args[2])) {
-        if (VERBOSE_FLAG) console.log(`[VERBOSE] Getting value as jQuery.`);
+        if (IS_VERBOSE) console.log(`[VERBOSE] Getting value as jQuery.`);
         value = jqueryEvalOrValue(args[2]);
       }
       else {
-        if (VERBOSE_FLAG) console.log(`[VERBOSE] Getting value as string.`);
+        if (IS_VERBOSE) console.log(`[VERBOSE] Getting value as string.`);
         value = args.slice(2).join(" ");  
       }
       // Check what we should set
       if (JQUERY_TAG.test(args[0])) {
-        if (VERBOSE_FLAG) console.log(`[VERBOSE] Setting variable as jQuery.`);
+        if (IS_VERBOSE) console.log(`[VERBOSE] Setting variable as jQuery.`);
         client = client.setValue(
           processJquery(args[0]),
           value
         );
       }
       else {
-        if (VERBOSE_FLAG) console.log(`[VERBOSE] Setting local variable.`);
+        if (IS_VERBOSE) console.log(`[VERBOSE] Setting local variable.`);
         var obj = {}; obj[args[0]] = value;
         varStack.push(obj);
       }
       break;
     case "click":
-      if (VERBOSE_FLAG) console.log(`[VERBOSE] Clicking on ${args[1]}.`);
+      if (IS_VERBOSE) console.log(`[VERBOSE] Clicking on ${args[1]}.`);
       client = client.click(processJquery(args[1]));
       break;
     case "wait":
       if (args[0] === "for") {
-        if (VERBOSE_FLAG) console.log(`[VERBOSE] Waiting for ${args[1]}.`);
+        if (IS_VERBOSE) console.log(`[VERBOSE] Waiting for ${args[1]}.`);
         client = client
           .waitForExist(processJquery(args[1]), timeout);
       } else {
         // Process as timestamp
-        if (VERBOSE_FLAG) console.log(`[VERBOSE] Waiting for timeslice.`);
+        if (IS_VERBOSE) console.log(`[VERBOSE] Waiting for timeslice.`);
         client = client
           .pause(timescale(args));
       }
@@ -190,6 +193,16 @@ function jqueryEvalOrValue(arg) {
   return retval;
 }
 
+function seleniumPrep() {
+    selenium.install(() => {
+        selenium.start(() => {
+            client = webdriverio.remote();
+            client.init();
+            main();
+        });   
+    });
+}
+
 if (require.main === module) {
-  main();
+  seleniumPrep();
 }
