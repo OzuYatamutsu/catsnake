@@ -116,7 +116,7 @@ function processLine(cmd, args) {
             }
             else {
                 if (IS_VERBOSE) console.log(`[VERBOSE] Getting value as string.`);
-                value = args.slice(2).join(" ");    
+                value = args.slice(2).join(" "); // TODO
             }
             // Check what we should set
             if (JQUERY_TAG.test(args[0])) {
@@ -128,6 +128,9 @@ function processLine(cmd, args) {
             }
             else {
                 if (IS_VERBOSE) console.log(`[VERBOSE] Setting local variable.`);
+                value = value + tokens.EOL;
+                // TODO
+                value = value + `var ${args[0]} = ""; client = client.execute();`
                 var obj = {}; obj[args[0]] = value;
                 varStack.push(obj);
             }
@@ -150,6 +153,7 @@ function processLine(cmd, args) {
             }
             break;
         case "return":
+            // TODO
             return varStack[args[0]];
             break;
         default:
