@@ -1,24 +1,11 @@
 require('./translate');
+var tokens = require("./tokens.js");
+
 var fs = require("fs");
 var webdriverio = require("webdriverio");
 var selenium = require('selenium-standalone');
 var client = ""; // WebdriverIO client
 
-var timescales = {
-    "ms": 1,
-    "millisecond": 1,
-    "milliseconds": 1,
-    "s": 1000,
-    "second": 1000,
-    "seconds": 1000,
-    "m": 60000,
-    "minute": 60000,
-    "minutes": 60000
-}
-
-const ARG_TOKEN = "{arg}";
-const JQUERY_TAG = /jquery\[(.*?)\]/;
-const JQUERY_TAG_EOT = /jquery\[(.*?)\]$/;
 
 var IS_VERBOSE = false;
 var varStack = [];
@@ -47,9 +34,9 @@ function readArgs(args) {
   }
 
   // Check for verbose flag
-  var flag = args.indexOf("--verbose");
+  var flag = args.indexOf(tokens.VERBOSE_ARG_LONG);
   if (flag == -1)
-    flag = args.indexOf("-v");
+    flag = args.indexOf(tokens.VERBOSE_ARG);
   if (flag != -1) {
     args.splice(flag, 1);
     if (args.length < 3) {
@@ -109,7 +96,7 @@ function parse(data) {
 
 // Converts all timescales to milliseconds
 function timescale(args) {
-  return parseInt(args[0]) * timescales[args[1]];
+  return parseInt(args[0]) * tokens.TIMESCALES[args[1]];
 }
 
 // Translates a single line, given a command and an argument array.
@@ -172,7 +159,7 @@ function processLine(cmd, args) {
 
 // Processes a jQuery argument.
 function processJquery(arg) {
-  return `'${JQUERY_TAG.exec(arg)[0]
+  return `'${tokens.JQUERY_TAG.exec(arg)[0]
     .replace(/"/g, '\\"')}'`;
 }
 
@@ -180,7 +167,7 @@ function processJquery(arg) {
 // or to just return the value of the jQuery selector.
 function jqueryEvalOrValue(arg) {
   var retval = 0;
-  if (JQUERY_TAG_EOT.test(arg)) {
+  if (tokens.JQUERY_TAG_EOT.test(arg)) {
     client = client
       .getValue(processJquery(arg))
       .then((result, retval) => { retval = result; });
