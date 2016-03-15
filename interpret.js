@@ -107,7 +107,7 @@ function processLine(cmd, args) {
             return `.url(${args[0]})`;
         case "set":
             if (IS_VERBOSE) console.log(`[VERBOSE] Setting value.`);
-            var value = 0;
+            var value = "";
             
             // Check how we should interpret value
             if (tokens.JQUERY_TAG.test(args[2])) {
@@ -168,17 +168,18 @@ function processJquery(arg) {
 function jqueryEvalOrValue(arg) {
     var retval = 0;
     if (tokens.JQUERY_TAG_EOT.test(arg)) {
-        client = client
-            .getValue(processJquery(arg))
-            .then((result, retval) => { retval = result; });
-    } else {
-        arg = arg.replace("jquery[", "$('").replace("]", ")")
-        client = client
-            .execute((arg) => { return eval(arg); })
-            .then((result, retval) => { retval = result; });
+        return `.getValue(${processJquery(arg})
+                .then((retval) => window.retval = retval;)`;
     }
     
-    return retval;
+    arg = arg.replace("jquery[", "$('").replace("]", ")")
+    return `.execute((arg) => { 
+        var script = document.createElement('script');script.src = "
+        https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js";
+        document.getElementsByTagName('head')[0].appendChild(script);
+        
+        window.retval = ${arg};
+    })`;
 }
 
 function seleniumPrep() {
